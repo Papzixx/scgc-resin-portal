@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCGC Green Polymer - Downstream Custody Mapping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scgc-red: #E31E24;
+    --scgc-dark: #0F172A;
+    --scgc-surface: #ffffff;
+    --scgc-bg: #F8FAFC;
+    --scgc-border: #E2E8F0;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    
+    --verified: #10B981;
+  }
+  * { box-sizing: border-box; transition: all 0.2s ease; }
+  html, body { margin: 0; padding: 0; background: var(--scgc-bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  .doc { max-width: 920px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .backlink { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); text-decoration: none; margin-bottom: 24px; font-weight: 500; }
+  .backlink:hover { color: var(--scgc-red); }
+
+  .strip { background: var(--scgc-dark); color: #F8FAFC; border-radius: 12px; padding: 32px; box-shadow: 0 4px 20px rgba(15,23,42,0.1); position: relative; overflow: hidden; }
+  .strip::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(227,30,36,0.15) 0%, transparent 100%); }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--scgc-red); margin: 0 0 8px; font-weight: 600; }
+  h1 { font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+  .strip-sub { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #94A3B8; margin-top: 10px; }
+
+  .sheet { background: var(--scgc-surface); border: 1px solid var(--scgc-border); border-radius: 12px; margin-top: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 12px 30px rgba(15,23,42,0.04); overflow: hidden; }
+  .chain { display: flex; flex-direction: column; }
+
+  .tier { display: grid; grid-template-columns: 64px 1fr; gap: 24px; padding: 32px; border-bottom: 1px solid var(--scgc-border); position: relative; }
+  .tier:last-child { border-bottom: none; }
+  .tier:hover { background: rgba(248, 250, 252, 0.7); }
+
+  .tier-rail { display: flex; flex-direction: column; align-items: center; }
+  .tier-num { width: 40px; height: 40px; border-radius: 10px; background: var(--scgc-dark); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+  .tier:first-child .tier-num { background: var(--scgc-red); }
+  .tier-connector { width: 2px; flex: 1; background: var(--scgc-border); margin-top: 8px; }
+  .tier:last-child .tier-connector { display: none; }
+
+  .tier-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; font-weight: 600; }
+  .tier-title { font-size: 18px; font-weight: 700; margin: 0 0 14px; color: var(--scgc-dark); }
+  
+  dl.tier-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; margin: 0; }
+  dl.tier-grid dt { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  dl.tier-grid dd { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 600; color: var(--scgc-dark); }
+
+  .oem-tag { display: inline-block; margin-top: 14px; background: rgba(16,185,129,0.08); color: var(--verified); font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(16,185,129,0.2); text-transform: uppercase; }
+
+  footer { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); padding: 32px 0; }
+</style>
+</head>
+<body>
+<div class="doc">
+  <a class="backlink" id="back-link" href="resin-passport.html">← Return to Batch Passport Ledger</a>
+
+  <div class="strip">
+    <p class="eyebrow">Downstream Supply Network Architecture</p>
+    <h1 id="chain-title">Registry Reference —</h1>
+    <p class="strip-sub" id="chain-sub">End-to-end multi-tier traceability validation map</p>
+  </div>
+
+  <div class="sheet">
+    <div class="chain" id="chain-body"></div>
+  </div>
+
+  <footer>SCGC Circularity Tracking Environment Framework</footer>
+</div>
+
+<script>
+  const BATCHES = {
+    "PP-2607-114": {
+      product: "SCGC GREEN POLYMER PP-H350F High-Flow",
+      plant: "Map Ta Phut Petrochemical Complex, Rayong",
+      produced: "2026-06-18 04:12 ICT",
+      downstream: {
+        molder: "Ningbo Huatai Precision Molding Co.",
+        jobId: "JOB-NBHT-30582",
+        molderLocation: "Zhejiang Province, China",
+        moldedDate: "2026-07-10",
+        part: "Interior Console Assembly Frame Core",
+        partNumber: "HAN-INT-2244",
+        oem: "BYD Automotive",
+        model: "BYD Han EV Sub-Frame Configuration",
+        factory: "BYD Shenzhen Intelligent Manufacturing Complex",
+        installed: "2026-07-18"
+      }
+    },
+    "ABS-2607-201": {
+      product: "SCGC GREEN POLYMER ABS-GP22 EcoAlloy",
+      plant: "Map Ta Phut Petrochemical Complex, Rayong",
+      produced: "2026-06-25 18:44 ICT",
+      downstream: {
+        molder: "Shanghai Jinfeng Injection Molding Ltd.",
+        jobId: "JOB-SJF-40217",
+        molderLocation: "Shanghai Industrial Zone, China",
+        moldedDate: "2026-07-09",
+        part: "High-thermal Battery Protection Shield panel",
+        partNumber: "BYD-BAT-1187",
+        oem: "BYD Automotive",
+        model: "BYD Seal Platform Core",
+        factory: "BYD Shenzhen Intelligent Manufacturing Complex",
+        installed: "2026-07-15"
+      }
+    }
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const lotKey = params.get("lot") || "PP-2607-114";
+  const batch = BATCHES[lotKey];
+  document.getElementById("back-link").href = "resin-passport.html?lot=" + encodeURIComponent(lotKey);
+
+  const body = document.getElementById("chain-body");
+
+  if (!batch || !batch.downstream) {
+    document.getElementById("chain-title").textContent = "Token Ledger Reference " + lotKey;
+    document.getElementById("chain-sub").textContent = "Downstream value path has not registered steps yet.";
+  } else {
+    const d = batch.downstream;
+    document.getElementById("chain-title").textContent = "Token Ledger Reference " + lotKey;
+    document.getElementById("chain-sub").textContent = batch.product + " — 3 Active Ecosystem Tiers Confirmed";
+
+    const tiers = [
+      {
+        label: "Tier 0 — Upstream Origin Base",
+        title: batch.plant,
+        rows: [ ["Material Specification", batch.product], ["Reactor Run Completion", batch.produced] ]
+      },
+      {
+        label: "Tier 1 — High-Precision Component Converter",
+        title: d.molder,
+        rows: [
+          ["Manufacturing Run ID", d.jobId],
+          ["Geographic Node Location", d.molderLocation],
+          ["Fabricated Asset Profile", d.part + " (SKU: " + d.partNumber + ")"],
+          ["Processing Ingestion Date", d.moldedDate]
+        ]
+      },
+      {
+        label: "OEM — Vehicle Industrial Assembly Unit",
+        title: d.factory,
+        rows: [
+          ["Target System Integration", d.model],
+          ["Component Placement Verification", d.part + " (SKU: " + d.partNumber + ")"],
+          ["System Synchronization Date", d.installed]
+        ],
+        oem: d.oem
+      }
+    ];
+
+    body.innerHTML = tiers.map((t, i) => `
+      <div class="tier">
+        <div class="tier-rail">
+          <div class="tier-num">${i + 1}</div>
+          <div class="tier-connector"></div>
+        </div>
+        <div>
+          <p class="tier-label">${t.label}</p>
+          <p class="tier-title">${t.title}</p>
+          <dl class="tier-grid">
+            ${t.rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join("")}
+          </dl>
+          ${t.oem ? `<span class="oem-tag">🔒 Secured By ${t.oem} Protocol</span>` : ""}
+        </div>
+      </div>
+    `).join("");
+  }
+</script>
+</body>
+</html>

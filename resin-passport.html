@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCGC Green Polymer — Digital Product Passport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scgc-red: #E31E24;
+    --scgc-dark: #0F172A;
+    --scgc-surface: #ffffff;
+    --scgc-bg: #F8FAFC;
+    --scgc-border: #E2E8F0;
+    --text-main: #1E293B;
+    --text-muted: #64748B;
+    
+    --verified: #10B981;
+    --line: #E2E8F0;
+    --seal: #F59E0B;
+  }
+  * { box-sizing: border-box; transition: all 0.2s ease; }
+  html, body { margin: 0; padding: 0; background: var(--scgc-bg); color: var(--text-main); font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  .doc { max-width: 920px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  .backlink { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text-muted); text-decoration: none; margin-bottom: 24px; font-weight: 500; }
+  .backlink:hover { color: var(--scgc-red); }
+
+  /* Passport Top Ribbon Header */
+  .strip { background: var(--scgc-dark); color: #F8FAFC; border-radius: 12px; padding: 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(15,23,42,0.15); }
+  .strip::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(227,30,36,0.1) 0%, transparent 100%); pointer-events: none; }
+  .strip-left { position: relative; z-index: 1; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--scgc-red); margin: 0 0 8px; font-weight: 600; }
+  .lot-id { font-size: 36px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+  .strip-meta { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #94A3B8; margin-top: 14px; display: grid; grid-template-columns: auto auto; gap: 4px 18px; }
+  .strip-meta span.k { color: #475569; font-weight: 600; text-transform: uppercase; font-size: 11px; }
+
+  /* Badge Seal Animation */
+  .seal { position: relative; z-index: 1; flex-shrink: 0; width: 100px; height: 100px; border-radius: 50%; border: 3px dashed var(--verified); display: flex; align-items: center; justify-content: center; text-align: center; transform: rotate(-8deg); background: rgba(16,185,129,0.06); }
+  .seal-text { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: var(--verified); line-height: 1.4; text-transform: uppercase; }
+
+  /* Shell Container Layout */
+  .sheet { background: var(--scgc-surface); border: 1px solid var(--scgc-border); border-radius: 12px; margin-top: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 12px 30px rgba(15,23,42,0.04); overflow: hidden; }
+  section { padding: 32px; border-bottom: 1px solid var(--scgc-border); }
+  section:last-child { border-bottom: none; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
+  h2 { font-size: 14px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin: 0; color: var(--scgc-dark); display: flex; align-items: center; gap: 8px; }
+  h2::before { content: ''; display: inline-block; width: 4px; height: 14px; background: var(--scgc-red); }
+  .section-note { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); }
+
+  /* Grid details blocks */
+  .twoup { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; border-bottom: 1px solid var(--scgc-border); }
+  .twoup section { border-bottom: none; }
+  .twoup section:first-child { border-right: 1px solid var(--scgc-border); }
+  @media (max-width: 768px) { .twoup { grid-template-columns: 1fr; } .twoup section:first-child { border-right: none; border-bottom: 1px solid var(--scgc-border); } }
+
+  dl.id-grid { display: grid; grid-template-columns: auto 1fr; gap: 10px 24px; margin: 0; }
+  dl.id-grid dt { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  dl.id-grid dd { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 13.5px; font-weight: 600; color: var(--scgc-dark); }
+
+  .carbon-figure { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 18px; }
+  .carbon-num { font-size: 42px; font-weight: 800; color: var(--scgc-dark); line-height: 1; letter-spacing: -1px; }
+  .carbon-unit { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  
+  .compare-row { display: flex; flex-direction: column; gap: 10px; }
+  .bar-line { display: flex; align-items: center; gap: 12px; }
+  .bar-label { width: 85px; font-size: 12.5px; color: var(--text-muted); font-weight: 500; }
+  .bar-track { flex: 1; height: 8px; background: var(--scgc-bg); border-radius: 4px; overflow: hidden; border: 1px solid var(--scgc-border); }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-fill.virgin { background: var(--text-muted); width: 100%; }
+  .bar-fill.this-lot { background: var(--verified); width: 34%; }
+  .bar-val { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; width: 60px; text-align: right; font-weight: 600; color: var(--scgc-dark); }
+  .reduction-note { margin-top: 14px; font-size: 13px; color: var(--verified); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+
+  /* Badges components updates */
+  .cert-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cert-badge { display: flex; align-items: center; gap: 8px; border: 1px solid var(--scgc-border); border-radius: 6px; padding: 10px 16px; background: var(--scgc-bg); font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--scgc-dark); }
+  .cert-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verified); }
+
+  /* Recycled Content Radial display */
+  .pcr-wrap { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+  .gauge { position: relative; width: 110px; height: 110px; }
+  .gauge svg { transform: rotate(-90deg); }
+  .gauge-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .gauge-pct { font-size: 24px; font-weight: 700; color: var(--scgc-dark); }
+  .gauge-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--text-muted); font-weight: 600; }
+  .pcr-copy { flex: 1; min-width: 260px; font-size: 14px; color: var(--text-muted); }
+  .pcr-copy strong { color: var(--scgc-dark); font-weight: 600; }
+
+  /* Custody map markers */
+  .trail { display: flex; overflow-x: auto; padding: 8px 0; }
+  .stop { flex: 1; min-width: 140px; position: relative; padding-right: 16px; }
+  .stop-line { display: flex; align-items: center; margin-bottom: 12px; }
+  .stop-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--scgc-dark); border: 2.5px solid #ffffff; box-shadow: 0 0 0 2px var(--scgc-dark); }
+  .stop:first-child .stop-dot { background: var(--scgc-red); box-shadow: 0 0 0 2px var(--scgc-red); }
+  .stop-track { height: 2px; flex: 1; background: var(--scgc-border); }
+  .stop:last-child .stop-track { display: none; }
+  .stop-name { font-size: 13px; font-weight: 700; margin: 0; color: var(--scgc-dark); }
+  .stop-date { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+  /* Document links actions */
+  .dl-row { display: flex; flex-direction: column; gap: 8px; }
+  .dl-item { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--scgc-border); border-radius: 8px; padding: 14px 20px; background: var(--scgc-bg); cursor: pointer; }
+  .dl-item:hover { border-color: var(--scgc-red); background: rgba(227,30,36,0.02); }
+  .dl-name { font-size: 14px; font-weight: 600; color: var(--scgc-dark); }
+  .dl-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-muted); }
+
+  footer { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); padding: 32px 0; }
+</style>
+</head>
+<body>
+<div class="doc">
+  <a class="backlink" id="back-link" href="executive-dashboard.html">← Return to Global Platform Dashboard</a>
+
+  <div class="strip">
+    <div class="strip-left">
+      <p class="eyebrow">Digital Product Passport (DPP)</p>
+      <p class="lot-id" id="f-lot-id">—</p>
+      <div class="strip-meta">
+        <span class="k">SCGC Brand Classification</span><span id="f-grade">—</span>
+        <span class="k">Origin Complex</span><span id="f-plant">—</span>
+        <span class="k">Reactor Timestamp</span><span id="f-produced">—</span>
+      </div>
+    </div>
+    <div class="seal">
+      <span class="seal-text">SCGC<br>Verified<br>Ledger</span>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <div class="twoup">
+      <section>
+        <div class="section-head"><h2>Batch Authentication Identity</h2></div>
+        <dl class="id-grid">
+          <dt>Global Lot Token</dt><dd id="f-lot-2">—</dd>
+          <dt>Polymer Matrix</dt><dd id="f-product">—</dd>
+          <dt>Net Dispatch Weight</dt><dd id="f-size">—</dd>
+          <dt>Production Date</dt><dd id="f-prod-date">—</dd>
+          <dt>Cracker Facility</dt><dd id="f-plant-2">—</dd>
+          <dt>Assigned Warranty Shelf</dt><dd id="f-shelf">—</dd>
+        </dl>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Environmental Footprint Metrics</h2></div>
+        <div class="carbon-figure">
+          <span class="carbon-num" id="f-carbon">—</span>
+          <span class="carbon-unit">kg CO₂e / kg resin (Scope 1-3)</span>
+        </div>
+        <div class="compare-row">
+          <div class="bar-line">
+            <span class="bar-label">Regional Virgin PP</span>
+            <div class="bar-track"><div class="bar-fill virgin"></div></div>
+            <span class="bar-val" id="f-virgin-val">—</span>
+          </div>
+          <div class="bar-line">
+            <span class="bar-label">SCGC Green Lot</span>
+            <div class="bar-track"><div class="bar-fill this-lot" id="f-lot-bar"></div></div>
+            <span class="bar-val" id="f-lot-val">—</span>
+          </div>
+        </div>
+        <p class="reduction-note" id="f-reduction">—</p>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h2>Quality Assurances &amp; Compliance Vault</h2>
+        <span class="section-note" id="f-cert-count">— verified secure tokens</span>
+      </div>
+      <div class="cert-row" id="f-certs"></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Circular Feedstock Input</h2></div>
+      <div class="pcr-wrap">
+        <div class="gauge">
+          <svg width="110" height="110" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+            <circle cx="60" cy="60" r="52" fill="none" stroke="#10B981" stroke-width="8"
+                    stroke-dasharray="326.7" stroke-dashoffset="326.7" stroke-linecap="round" id="f-gauge-circle"/>
+          </svg>
+          <div class="gauge-label">
+            <span class="gauge-pct" id="f-pcr-pct">—</span>
+            <span class="gauge-sub">PCR RATIO</span>
+          </div>
+        </div>
+        <div class="pcr-copy" id="f-pcr-copy">—</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Custody Chain Logistics Trail</h2>
+        <span class="section-note" id="f-trail-count">— node points confirmed</span>
+      </div>
+      <div class="trail" id="f-trail"></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Cryptographic Verification Documents</h2></div>
+      <div class="dl-row" id="f-downloads"></div>
+    </section>
+
+    <section id="f-downstream-section" style="display:none;">
+      <div class="section-head">
+        <h2>Downstream Circular Destination</h2>
+        <span class="section-note" id="f-downstream-note">—</span>
+      </div>
+      <p style="font-size:14px; color:var(--text-muted); margin:0 0 16px;" id="f-downstream-summary">—</p>
+      <a id="f-downstream-link" href="#" style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono', monospace; font-size:13px; color:var(--scgc-red); text-decoration:none; font-weight:600;">
+        Trace Downstream Part Line Assembly →
+      </a>
+    </section>
+  </div>
+
+  <footer id="f-footer">Secure Cryptographic Product Passport Ledger • SCGC Performance Chemicals Operations</footer>
+</div>
+
+<script>
+  const BATCHES = {
+    "PP-2607-114": {
+      grade: "SCGC GREEN POLYMER PP-H350F",
+      product: "High-Flow Polypropylene Homopolymer",
+      plant: "Map Ta Phut Petrochemical Complex, Rayong",
+      produced: "2026-06-18 04:12 ICT",
+      size: "24,000 kg",
+      shelf: "24 Months via Storage Code SC-01",
+      carbon: 1.42,
+      virginBaseline: 2.10,
+      pcrPercent: 30,
+      certs: ["COA Specification Shield", "SDS Compliance Vault", "ISCC PLUS Mass-Balance Token", "REACH Declaration Registry"],
+      trail: [
+        { name: "SCGC Olefins Cracker", date: "2026-06-18" },
+        { name: "Map Ta Phut Storage Node", date: "2026-06-20" },
+        { name: "Laem Chabang Terminal", date: "2026-06-23" },
+        { name: "Ningbo Port Gate", date: "2026-07-02" },
+        { name: "Tier 1 Converter Plant", date: "2026-07-06" }
+      ],
+      downloads: [
+        { name: "SCGC Certificate of Analysis (COA)", meta: "E-SIGNED PDF · 240 KB" },
+        { name: "Scope 1-3 Product Carbon Footprint Audit", meta: "VERIFIED PDF · 180 KB" },
+        { name: "ISCC PLUS Chain of Custody Declaration", meta: "SECURE PDF · 96 KB" }
+      ],
+      downstream: {
+        molder: "Ningbo Huatai Precision Molding Co.",
+        jobId: "JOB-NBHT-30582",
+        part: "Eco-optimized Interior Console structural core",
+        oem: "BYD Automotive Manufacturing",
+        model: "BYD Han EV Premium Line",
+        installed: "2026-07-18"
+      }
+    },
+    "ABS-2607-201": {
+      grade: "SCGC GREEN POLYMER ABS-GP22 EcoAlloy",
+      product: "High-Impact ABS Engineered Resin",
+      plant: "Map Ta Phut Petrochemical Complex, Rayong",
+      produced: "2026-06-25 18:44 ICT",
+      size: "18,500 kg",
+      shelf: "18 Months via Storage Code SC-04",
+      carbon: 1.95,
+      virginBaseline: 3.30,
+      pcrPercent: 50,
+      certs: ["COA Specification Shield", "SDS Compliance Vault", "Global Recycled Standard Token", "RoHS Compliance Certified"],
+      trail: [
+        { name: "SCGC Polymerization Unit 3", date: "2026-06-25" },
+        { name: "Map Ta Phut Storage Node", date: "2026-06-27" },
+        { name: "Laem Chabang Terminal", date: "2026-06-30" },
+        { name: "Shanghai Customs Hub", date: "2026-07-08" }
+      ],
+      downloads: [
+        { name: "SCGC Certificate of Analysis (COA)", meta: "E-SIGNED PDF · 235 KB" },
+        { name: "Product Lifecycle Carbon Declaration", meta: "VERIFIED PDF · 175 KB" },
+        { name: "GRS Recycled Feedstock Tracker Certificate", meta: "SECURE PDF · 110 KB" }
+      ],
+      downstream: {
+        molder: "Shanghai Jinfeng Injection Molding Ltd.",
+        jobId: "JOB-SJF-40217",
+        part: "High-thermal Battery Protection Shield panel",
+        oem: "BYD Automotive Manufacturing",
+        model: "BYD Seal Performance Line",
+        installed: "2026-07-15"
+      }
+    }
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const lotKey = params.get("lot") || "PP-2607-114";
+  const batch = BATCHES[lotKey];
+
+  if (!batch) {
+    document.querySelector(".doc").innerHTML =
+      '<div class="sheet"><section style="text-align:center; padding: 64px 32px;"><h2>SCGC Passport Signature Not Found</h2>' +
+      '<p style="color:var(--text-muted); margin-top:12px;">No certified ledger matching registry token ID "' + lotKey + '" exists in the SCGC trace environment.</p>' +
+      '</section></div>';
+  } else {
+    document.getElementById("f-lot-id").textContent = lotKey;
+    document.getElementById("f-lot-2").textContent = lotKey;
+    document.getElementById("f-grade").textContent = batch.grade;
+    document.getElementById("f-plant").textContent = batch.plant;
+    document.getElementById("f-plant-2").textContent = batch.plant;
+    document.getElementById("f-produced").textContent = batch.produced;
+    document.getElementById("f-prod-date").textContent = batch.produced;
+    document.getElementById("f-product").textContent = batch.product;
+    document.getElementById("f-size").textContent = batch.size;
+    document.getElementById("f-shelf").textContent = batch.shelf;
+
+    document.getElementById("f-carbon").textContent = batch.carbon.toFixed(2);
+    document.getElementById("f-virgin-val").textContent = batch.virginBaseline.toFixed(2);
+    document.getElementById("f-lot-val").textContent = batch.carbon.toFixed(2);
+    const pct = Math.round((batch.carbon / batch.virginBaseline) * 100);
+    document.getElementById("f-lot-bar").style.width = pct + "%";
+    const reduction = Math.round((1 - batch.carbon / batch.virginBaseline) * 100);
+    document.getElementById("f-reduction").innerHTML = `<span>🛡️</span> <strong>${reduction}% lower carbon footprint</strong> than standard fossil-based baseline profiles.`;
+
+    document.getElementById("f-cert-count").textContent = batch.certs.length + " encrypted ledger tags signature";
+    document.getElementById("f-certs").innerHTML = batch.certs
+      .map(c => '<div class="cert-badge"><span class="dot"></span>' + c + '</div>')
+      .join("");
+
+    document.getElementById("f-pcr-pct").textContent = batch.pcrPercent + "%";
+    const circumference = 326.7;
+    const offset = circumference * (1 - batch.pcrPercent / 100);
+    document.getElementById("f-gauge-circle").setAttribute("stroke-dashoffset", offset);
+    document.getElementById("f-pcr-copy").innerHTML =
+      "Contains verified <strong>" + batch.pcrPercent + "% post-consumer recycled (PCR) circular resin inputs</strong>, fully allocated via advanced ISCC PLUS mass-balance accounting protocols. The remaining " + (100 - batch.pcrPercent) + "% matches premium high-value-added virgin formulation metrics, yielding zero loss in tensile properties.";
+
+    document.getElementById("f-trail-count").textContent = batch.trail.length + " verified secure milestones logged";
+    document.getElementById("f-trail").innerHTML = batch.trail
+      .map(s =>
+        '<div class="stop"><div class="stop-line"><div class="stop-dot"></div><div class="stop-track"></div></div>' +
+        '<p class="stop-name">' + s.name + '</p><p class="stop-date">' + s.date + '</p></div>'
+      ).join("");
+
+    document.getElementById("f-downloads").innerHTML = batch.downloads
+      .map(d =>
+        '<div class="dl-item" role="button" tabindex="0" onclick="alert(\'Initializing cryptographic file transfer download pipeline...\')">' +
+        '<span class="dl-name">' + d.name + '</span><span class="dl-meta">' + d.meta + '</span></div>'
+      ).join("");
+
+    if (batch.downstream) {
+      const d = batch.downstream;
+      document.getElementById("f-downstream-section").style.display = "block";
+      document.getElementById("f-downstream-note").textContent = "Downstream Chain Confirmed";
+      document.getElementById("f-downstream-summary").innerHTML =
+        "Allocated to Tier 1 manufacturing partner <strong>" + d.molder + "</strong> for precision component fabrication of: " + d.part + ", currently tracked inside final assembly infrastructure at <strong>" + d.oem + "</strong> for the " + d.model + ".";
+      document.getElementById("f-downstream-link").href = "trace-chain.html?lot=" + encodeURIComponent(lotKey);
+    }
+  }
+</script>
+</body>
+</html>
