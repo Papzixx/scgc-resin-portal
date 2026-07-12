@@ -6,7 +6,6 @@
 <title>SCGC Green Polymer - Executive Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
   :root {
     --scgc-red: #E31E24;
@@ -182,31 +181,7 @@
 
       <div class="kpi-row" id="kpi-row"></div>
 
-      <div class="row-3">
-        <div class="panel">
-          <h3>Sourcing Spend &amp; Volume Trends</h3>
-          <div class="panel-note">Aggregated material value vs. high-value polymer tonnage</div>
-          <div class="chart-wrap"><canvas id="chart-spend"></canvas></div>
-        </div>
-        <div class="panel">
-          <h3>Product Carbon Intensity</h3>
-          <div class="panel-note">Weighted average (kg CO₂e / kg resin) across operations</div>
-          <div class="chart-wrap"><canvas id="chart-carbon"></canvas></div>
-        </div>
-        <div class="panel">
-          <h3>Green Polymer Portfolio Mix</h3>
-          <div class="panel-note">Breakdown by environmental classification rank</div>
-          <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
-          <div id="donut-legend"></div>
-        </div>
-      </div>
-
-      <div class="row-3b">
-        <div class="panel">
-          <h3>Active Custody Pipeline</h3>
-          <div class="panel-note">Live location verification for high-value batch in transit</div>
-          <div class="flow" id="flow"></div>
-        </div>
+      <div class="row-2" style="grid-template-columns:1fr; max-width:520px; margin:0 auto 20px;">
         <div class="panel">
           <h3>Digital Product Passport <span class="panel-note">— Active Batch</span></h3>
           <div class="pw-row">
@@ -223,10 +198,6 @@
             <span class="pw-tag">GRS Certification</span><span class="pw-tag">REACH Matrix</span>
           </div>
           <a class="panel-link" href="resin-passport.html?lot=PP-2607-114">Explore Full Passport Ledger →</a>
-        </div>
-        <div class="panel">
-          <h3>Alloy Formulation Carbon Optimizer</h3>
-          <div class="opt-cards" id="opt-cards"></div>
         </div>
       </div>
 
@@ -271,101 +242,6 @@
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-value">${k.value}<span class="unit">${k.unit}</span></div>
       <div class="kpi-delta ${k.up ? 'up' : (k.good ? 'down good' : 'down bad')}">${k.up ? '▲' : '▼'} ${k.delta}</div>
-    </div>
-  `).join("");
-
-  // ---------- line charts ----------
-  const months = ["Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun"];
-
-  new Chart(document.getElementById("chart-spend"), {
-    type: "line",
-    data: {
-      labels: months,
-      datasets: [
-        { label:"Spend (M CNY)", data:[22,24,26,25,28,30,29,27,26,28,31,32], borderColor:"#E31E24", backgroundColor:"rgba(227, 30, 36, 0.04)", fill:true, tension:0.3, pointRadius:2 },
-        { label:"Volume (kton)", data:[1.3,1.4,1.5,1.4,1.6,1.7,1.6,1.5,1.5,1.6,1.8,1.8], borderColor:"#0F172A", backgroundColor:"transparent", tension:0.3, pointRadius:2, yAxisID:"y1" }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins:{ legend:{ labels:{ font:{ family:"Plus Jakarta Sans", size:11, weight:500 } } } },
-      scales:{
-        y:{ display:false },
-        y1:{ display:false, position:"right" },
-        x:{ grid:{ display:false }, ticks:{ font:{ size:10, family:"JetBrains Mono" } } }
-      }
-    }
-  });
-
-  new Chart(document.getElementById("chart-carbon"), {
-    type: "line",
-    data: {
-      labels: months,
-      datasets: [
-        { label:"kg CO₂e/kg", data:[1.9,1.87,1.83,1.8,1.76,1.72,1.7,1.66,1.63,1.6,1.59,1.58], borderColor:"#10B981", backgroundColor:"rgba(16, 185, 129, 0.04)", fill:true, tension:0.3, pointRadius:2 }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins:{ legend:{ display:false } },
-      scales:{ y:{ display:false }, x:{ grid:{ display:false }, ticks:{ font:{ size:10, family:"JetBrains Mono" } } } }
-    }
-  });
-
-  // ---------- donut ----------
-  const donutData = [
-    { name:"SCGC Green PCR (Recycled)", val:38.2, color:"#10B981" },
-    { name:"SCGC Green Bio-Based", val:24.5, color:"#34D399" },
-    { name:"High Value Added (HVA) Virgin", val:16.8, color:"#0F172A" },
-    { name:"Standard Polyolefins", val:11.4, color:"#64748B" },
-    { name:"Specialty Custom Compounds", val:9.1, color:"#94A3B8" }
-  ];
-  new Chart(document.getElementById("chart-donut"), {
-    type: "doughnut",
-    data: {
-      labels: donutData.map(d=>d.name),
-      datasets: [{ data: donutData.map(d=>d.val), backgroundColor: donutData.map(d=>d.color), borderWidth:4, borderColor:"#ffffff" }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins:{ legend:{ display:false } }, cutout:"70%" }
-  });
-  document.getElementById("donut-legend").innerHTML = donutData.map(d => `
-    <div class="legend-row" style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px solid var(--scgc-border);">
-      <span style="display:flex; align-items:center; gap:8px;"><span style="width:8px; height:8px; border-radius:50%; background:${d.color}"></span>${d.name}</span>
-      <span style="font-family:'JetBrains Mono'; font-weight:600;">${d.val}%</span>
-    </div>
-  `).join("");
-
-  // ---------- supply chain flow ----------
-  const flowNodes = [
-    { name:"SCGC Plant", loc:"Rayong, TH", active:true },
-    { name:"Smart Hub", loc:"Laem Chabang", active:true },
-    { name:"Maritime Fleet", loc:"Gulf of Thailand", active:true },
-    { name:"Import Terminal", loc:"Ningbo Port, CN", active:false },
-    { name:"Tier 1 Converter", loc:"Ningbo, CN", active:false },
-    { name:"OEM Assembly", loc:"Shenzhen, CN", active:false },
-  ];
-  document.getElementById("flow").innerHTML = flowNodes.map((n,i) => `
-    <div class="flow-node ${n.active ? 'active' : ''}">
-      <div class="flow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>
-      <div class="flow-name">${n.name}</div>
-      <div class="flow-loc">${n.loc}</div>
-    </div>
-    ${i < flowNodes.length-1 ? '<div class="flow-arrow"></div>' : ''}
-  `).join("");
-
-  // ---------- optimizer ----------
-  const options = [
-    { name:"Max Eco-PCR Formulation", val:"1.21", cost:"Target Premium: +4.2%", selected:false },
-    { name:"Balanced HVA Matrix", val:"1.58", cost:"Target Premium: Base", selected:true },
-    { name:"Standard Baseline Mix", val:"2.05", cost:"Target Discount: -2.1%", selected:false }
-  ];
-  document.getElementById("opt-cards").innerHTML = options.map(o => `
-    <div class="opt-card ${o.selected ? 'selected' : ''}">
-      <div class="opt-top"><span class="opt-name">${o.name}</span><span class="opt-val">${o.val}</span></div>
-      <div class="opt-cost">${o.cost}</div>
-      <button class="opt-btn ${o.selected ? 'selected-btn' : ''}" onclick="alert('Configuration updated to: ${o.name}')">${o.selected ? '✓ Optimized Profile' : 'Apply Formulation Matrix'}</button>
     </div>
   `).join("");
 
